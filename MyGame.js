@@ -13,6 +13,7 @@ MyGame = function()
     //Load the spriteseet image we are using for our animated sprite
     var gameAssets = [
         {id:'spriteSheetImg',   url:'images/spider_crawl.png'},
+		{id:'spriteBall',	url:'images/SingleToRotation.png'},
     ];
     this.assetManager.assignImageAssetList("required", gameAssets);
 

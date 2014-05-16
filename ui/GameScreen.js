@@ -35,6 +35,17 @@ GameScreen = function(width,height)
         This is where we set up our sprite sheet animation object
         with initial properties and position it on the screen.
     */
+	this.spriteBall = new TGE.SpriteSheetAnimation().setup({
+		image:"spriteBall",
+		columns:8,
+		rows:8,
+		totalFrames:64,
+		fps:34,
+		x:320,
+		y:100
+	});
+	this.addChild(this.spriteBall);
+	this.spriteBall.play();
     this.spriteSheetAnim = new TGE.SpriteSheetAnimation().setup({
         image:"spriteSheetImg",
         columns:4,
@@ -55,6 +66,7 @@ GameScreen = function(width,height)
 	this.addChild(this.rotationValue);
 	this.spriteSheetAnim.addEventListener("keyup",this.stopAnim.bind(this));
 	this.spriteSheetAnim.addEventListener("keydown",this.MoveSpider.bind(this));
+	this.spriteBall.addEventListener("update",this.SpriteBallMove.bind(this));
 	this.spriteSheetAnim.addEventListener("update",this.updateSpider.bind(this));
 /*    //Start the SpriteSheetAnimation Object playing
 /*   //this.spriteSheetAnim.play();
@@ -114,7 +126,11 @@ GameScreen.prototype =
     //*************************************************
     //******     ANIMATION CONTROL FUNCTIONS     ******
     //*************************************************
-	
+	SpriteBallMove: function(event){
+		var spriteBall = event.currentTarget
+		spriteBall.x += 2;
+		spriteBall.y += 2;
+	},
 	MoveSpider: function(event){
 		this.spriteSheetAnim.play();
 		if(event.keyCode == 37)
