@@ -19,6 +19,7 @@ GameScreen = function(width,height)
 	this.dx = 2;
 	this.dy = 2;
 	this.score = 0;
+	this.hityet = false;
 	
 	//
 	//Set background color
@@ -160,22 +161,27 @@ GameScreen.prototype =
 		
 		;
 	},
-	
 	updateSpider: function(event){
 		var spider = event.currentTarget;
 		if(this.forward == true){
-			spider.x -= (Math.cos((spider.rotation+90)*Math.PI/180));
-			spider.y -= (Math.sin((spider.rotation+90)*Math.PI/180));
+			spider.x -= 3*(Math.cos((spider.rotation+90)*Math.PI/180));
+			spider.y -= 3*(Math.sin((spider.rotation+90)*Math.PI/180));
 		}
 		if(this.turn == "left")
 			spider.rotation -= 3;
 		if(this.turn == "right")
 			spider.rotation += 3;
 		this.rotationValue.text = spider.rotation%360
-		if(spider.getBounds().intersects(this.spriteBall.getBounds())){
-			this.score += 1;
+		if(spider.getBounds().intersects(this.spriteBall.getBounds(),0.2,0.7)){
+			this.hityet = true;
 		}
 		this.scoreValue.text= this.score;
+		if(this.hityet == true){
+			this.score += 1;
+			this.spriteBall.x = (Math.random() * 640);
+			this.spriteBall.y = (Math.random() * 832);
+			this.hityet = false;
+		}
 	},
     //Play Animation, executes when the Play button is pressed
     playAnim: function(){
