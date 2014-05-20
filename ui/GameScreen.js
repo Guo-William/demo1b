@@ -12,9 +12,14 @@ GameScreen = function(width,height)
     //Create a top-level variable for our SpriteSheetAnimation object
     this.spriteSheetAnim;
 	//
+	this.scoreValue;
 	this.rotationValue;
 	this.turn = "";
 	this.forward = false;
+	this.dx = 2;
+	this.dy = 2;
+	this.score = 0;
+	
 	//
 	//Set background color
     this.backgroundColor = "#039AFF";
@@ -57,6 +62,13 @@ GameScreen = function(width,height)
     });
     this.addChild(this.spriteSheetAnim);
 	//allows spider movement
+	this.scoreValue = new TGE.Text().setup({
+		x:200,
+		y:200,
+		text:"",
+		font:"32px Times New Roman"
+	});
+	this.addChild(this.scoreValue);
 	this.rotationValue = new TGE.Text().setup({
 		x:300,
 		y:300,
@@ -123,13 +135,19 @@ GameScreen = function(width,height)
 
 GameScreen.prototype =
 {
+	
     //*************************************************
     //******     ANIMATION CONTROL FUNCTIONS     ******
     //*************************************************
+	
 	SpriteBallMove: function(event){
 		var spriteBall = event.currentTarget
-		spriteBall.x += 2;
-		spriteBall.y += 2;
+		spriteBall.x += this.dx;
+		spriteBall.y += this.dy;
+		if(spriteBall.x >= 640 || spriteBall.x<=0)
+			this.dx = -this.dx;
+		if(spriteBall.y >= 832 || spriteBall.y<= 0)
+			this.dy = -this.dy;
 	},
 	MoveSpider: function(event){
 		this.spriteSheetAnim.play();
@@ -153,8 +171,11 @@ GameScreen.prototype =
 			spider.rotation -= 3;
 		if(this.turn == "right")
 			spider.rotation += 3;
-		
 		this.rotationValue.text = spider.rotation%360
+		if(spider.getBounds().intersects(this.spriteBall.getBounds())){
+			this.score += 1;
+		}
+		this.scoreValue.text= this.score;
 	},
     //Play Animation, executes when the Play button is pressed
     playAnim: function(){
