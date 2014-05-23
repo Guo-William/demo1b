@@ -20,6 +20,10 @@ GameScreen = function(width,height)
 	this.dy = 2;
 	this.score = 0;
 	this.hityet = false;
+	this.green = 0;
+	this.red = 0;
+	this.blue = 0;
+	this.rgbco = "";
 	
 	//
 	//Set background color
@@ -181,8 +185,18 @@ GameScreen.prototype =
 			this.spriteBall.x = (Math.random() * 640);
 			this.spriteBall.y = (Math.random() * 832);
 			this.hityet = false;
+			this.backgroundColor = this.randomRGBcolor;
+			//"\"rgb("+(Math.random() * 255)+"\,"+(Math.random() * 255)+"\,"+(Math.random() * 255)+"\"")
 		}
 	},
+	randomRGBcolor: function(){
+		this.red = (Math.random() * 255)
+		this.green = (Math.random() * 255)
+		this.blue = (Math.random() * 255)
+		this.rgbco = "\"rgb("+tostring(this.red)+","+tostring(this.green)+","+tostring(this.blue)+")\"";
+		return.this.rgbco;
+		
+	}
     //Play Animation, executes when the Play button is pressed
     playAnim: function(){
         this.spriteSheetAnim.play();
