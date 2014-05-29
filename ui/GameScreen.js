@@ -12,6 +12,8 @@ GameScreen = function(width,height)
     //Create a top-level variable for our SpriteSheetAnimation object
     this.spriteSheetAnim;
 	//
+	this.startButton;
+	this.gameTimer;
 	this.scoreValue;
 	this.scoreValueOut;
 	this.rotationValue;
@@ -21,6 +23,10 @@ GameScreen = function(width,height)
 	this.dy = 2;
 	this.score = 0;
 	this.hityet = false;
+	this.timerButton;
+	this.addTime = 0;
+	this.timeLeft = 0;
+	this.timeValue;
 	
 	
 	//
@@ -51,10 +57,7 @@ GameScreen = function(width,height)
 		fps:34,
 		x:320,
 		y:100
-	});
-	this.addChild(this.spriteBall);
-	
-	this.spriteBall.play();
+	});			
     this.spriteSheetAnim = new TGE.SpriteSheetAnimation().setup({
         image:"spriteSheetImg",
         columns:4,
@@ -64,7 +67,6 @@ GameScreen = function(width,height)
         x: 320,
         y: 240
     });
-    this.addChild(this.spriteSheetAnim);
 	//allows spider movement
 	this.scoreValue = new TGE.Text().setup({
 		x:50,
@@ -73,8 +75,50 @@ GameScreen = function(width,height)
 		font:"32px Times New Roman",
 		color:"#FFF"
 	});
-	this.addChild(this.scoreValue);
-	//Rotational value indicator
+	this.timeValue = new TGE.Text().setup({
+		x:80,
+		y:45,
+		text:"",
+		font:"32px Times New Roman",
+		color:"#FFF"
+	});
+	this.startButton = new TGE.Button().setup({
+        textColor: "#000",
+        text: "Start",
+        x:this.percentageOfWidth(0.5),
+        y:450,
+        pressFunction:this.beginGame.bind(this)
+    });
+	this.timer3Button = new TGE.Button().setup({
+		textColor: "#000",
+        text: "3 Seconds",
+        x:this.percentageOfWidth(0.2),
+        y:500,
+        pressFunction:this.setTime.bind(this)
+	});
+	this.timer5Button = new TGE.Button().setup({
+		textColor: "#000",
+        text: "5 Seconds",
+        x:this.percentageOfWidth(0.5),
+        y:500,
+        pressFunction:this.setTime.bind(this)
+	});
+	this.timer7Button = new TGE.Button().setup({
+		textColor: "#000",
+        text: "7 Seconds",
+        x:this.percentageOfWidth(0.8),
+        y:500,
+        pressFunction:this.setTime.bind(this)
+	});
+	this.addChild(this.timer3Button);
+	this.addChild(this.timer5Button);
+	this.addChild(this.timer7Button);
+	
+	this.spriteSheetAnim.addEventListener("keyup",this.stopAnim.bind(this));
+	this.spriteSheetAnim.addEventListener("keydown",this.MoveSpider.bind(this));
+	this.spriteBall.addEventListener("update",this.SpriteBallMove.bind(this));
+	
+	/*Rotational value indicator
 	/*this.rotationValue = new TGE.Text().setup({
 		x:300,
 		y:300,
@@ -82,12 +126,7 @@ GameScreen = function(width,height)
 		font:"32px Times New Roman"
 		});
 	this.addChild(this.rotationValue);*/
-	this.spriteSheetAnim.addEventListener("keyup",this.stopAnim.bind(this));
-	this.spriteSheetAnim.addEventListener("keydown",this.MoveSpider.bind(this));
-	this.spriteBall.addEventListener("update",this.SpriteBallMove.bind(this));
-	this.spriteSheetAnim.addEventListener("update",this.updateSpider.bind(this));
-	
-/*    //Start the SpriteSheetAnimation Object playing
+    //Start the SpriteSheetAnimation Object playing
 /*   //this.spriteSheetAnim.play();
 /*
     //*************************************
@@ -146,7 +185,23 @@ GameScreen.prototype =
     //*************************************************
     //******     ANIMATION CONTROL FUNCTIONS     ******
     //*************************************************
-	
+	beginGame: function(){
+		this.addChild(this.spriteBall);
+		this.spriteBall.play();
+		this.addChild(this.spriteSheetAnim);
+		this.addChild(this.scoreValue);
+		this.addChild(this.timeValue);
+		this.removeChild(this.startButton);
+		this.spriteSheetAnim.addEventListener("update",this.updateSpider.bind(this));
+	},
+	setTime:function(){
+		this.addTime = parseInt(this.timer3Button.text.substring(0,1));
+		this.timeLeft = parseInt(this.timer3Button.text.substring(0,1));
+		this.addChild(this.startButton);
+		this.removeChild(this.timer3Button);
+		this.removeChild(this.timer5Button);
+		this.removeChild(this.timer7Button);
+	},
 	SpriteBallMove: function(event){
 		var spriteBall = event.currentTarget
 		spriteBall.x += this.dx;
@@ -173,6 +228,7 @@ GameScreen.prototype =
 		var red = 0;
 		var green = 0;
 		var blue = 0;
+		this.timeLeft-=1/100;
 		if(this.forward == true){
 			spider.x -= 3*(Math.cos((spider.rotation+90)*Math.PI/180));
 			spider.y -= 3*(Math.sin((spider.rotation+90)*Math.PI/180));
@@ -186,7 +242,14 @@ GameScreen.prototype =
 		if(spider.getBounds().intersects(this.spriteBall.getBounds(),0.2,0.7)){
 			this.hityet = true;
 		}
-		this.scoreValue.text = "score:" + this.score;
+		this.scoreValue.text = "Score:" + this.score;
+		this.timeValue.text = "Time Left:" + parseInt(this.timeLeft+1);
+		if(this.timeLeft<=0){
+			this.removeChild(this.spriteBall);
+			this.removeChild(this.spriteSheetAnim);
+			this.removeChild(this.scoreValue);
+			this.removeChild(this.timeValue);
+		}
 		if(this.hityet == true){
 			this.score += 1;
 			this.spriteBall.x = (Math.random() * 640);
@@ -196,7 +259,9 @@ GameScreen.prototype =
 			green = parseInt(Math.random()*255);
 			blue = parseInt(Math.random()*255);
 			rgbnum = red+","+green+","+blue;
-			this.backgroundColor = "rgb("+rgbnum+")";	
+			this.backgroundColor = "rgb("+rgbnum+")";
+			this.timeLeft += this.addTime;
+			
 		}
 	},
 	
