@@ -17,6 +17,7 @@ GameScreen = function(width,height)
 	this.scoreValue;
 	this.scoreValueOut;
 	this.rotationValue;
+	this.gameOver;
 	this.turn = "";
 	this.forward = false;
 	this.dx = 2;
@@ -27,6 +28,7 @@ GameScreen = function(width,height)
 	this.addTime = 0;
 	this.timeLeft = 0;
 	this.timeValue;
+	this.point = 3;
 	
 	
 	//
@@ -82,6 +84,13 @@ GameScreen = function(width,height)
 		font:"32px Times New Roman",
 		color:"#FFF"
 	});
+	this.gameOver = new TGE.Text().setup({
+		x:400,
+		y:400,
+		text:"GAME OVER",
+		font:"32px Times New Roman",
+		color:"#FFF"
+	});
 	this.startButton = new TGE.Button().setup({
         textColor: "#000",
         text: "Start",
@@ -110,6 +119,8 @@ GameScreen = function(width,height)
         y:500,
         pressFunction:this.setTime.bind(this)
 	});
+	
+		
 	this.addChild(this.timer3Button);
 	this.addChild(this.timer5Button);
 	this.addChild(this.timer7Button);
@@ -194,9 +205,10 @@ GameScreen.prototype =
 		this.removeChild(this.startButton);
 		this.spriteSheetAnim.addEventListener("update",this.updateSpider.bind(this));
 	},
-	setTime:function(){
-		this.addTime = parseInt(this.timer3Button.text.substring(0,1));
-		this.timeLeft = parseInt(this.timer3Button.text.substring(0,1));
+	setTime: function(event){
+		var btn = event.text;
+		this.addTime = parseInt(btn.substring(0,1));
+		this.timeLeft = parseInt(btn.substring(0,1));
 		this.addChild(this.startButton);
 		this.removeChild(this.timer3Button);
 		this.removeChild(this.timer5Button);
@@ -249,8 +261,10 @@ GameScreen.prototype =
 			this.removeChild(this.spriteSheetAnim);
 			this.removeChild(this.scoreValue);
 			this.removeChild(this.timeValue);
+			this.addChild(this.gameOver);
 		}
 		if(this.hityet == true){
+			
 			this.score += 1;
 			this.spriteBall.x = (Math.random() * 640);
 			this.spriteBall.y = (Math.random() * 832);
