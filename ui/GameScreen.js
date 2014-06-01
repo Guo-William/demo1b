@@ -127,14 +127,14 @@ GameScreen = function(width,height)
 	this.spriteSheetAnim.addEventListener("keydown",this.MoveSpider.bind(this));
 	this.spriteBall.addEventListener("update",this.SpriteBallMove.bind(this));
 	
-	/*Rotational value indicator
-	/*this.rotationValue = new TGE.Text().setup({
+	//Rotational value indicator
+	this.rotationValue = new TGE.Text().setup({
 		x:300,
 		y:300,
 		text:"",
 		font:"32px Times New Roman"
 		});
-	this.addChild(this.rotationValue);*/
+	this.addChild(this.rotationValue);
     //Start the SpriteSheetAnimation Object playing
 /*   //this.spriteSheetAnim.play();
 /*
@@ -190,7 +190,6 @@ GameScreen = function(width,height)
 
 GameScreen.prototype =
 {
-	
     //*************************************************
     //******     ANIMATION CONTROL FUNCTIONS     ******
     //*************************************************
@@ -229,8 +228,6 @@ GameScreen.prototype =
 			this.turn = "right";
 		if(event.keyCode == 38)
 			this.forward = true;
-		
-		;
 	},
 	updateSpider: function(event){
 		var spider = event.currentTarget;
@@ -239,7 +236,27 @@ GameScreen.prototype =
 		var green = 0;
 		var blue = 0;
 		this.timeLeft-=1/100;
-		if(this.forward == true){
+		if(this.forward == true && spider.x>0 && spider.x<640 && spider.y>0 && spider.y<832){
+			spider.x -= 3*(Math.cos((spider.rotation+90)*Math.PI/180));
+			spider.y -= 3*(Math.sin((spider.rotation+90)*Math.PI/180));
+		}
+		else if( this.forward == true && spider.x <= 0 && (spider.rotation>0 && spider.rotation<180 || spider.rotation<-180
+		&& spider.rotation>-360)){
+			spider.x -= 3*(Math.cos((spider.rotation+90)*Math.PI/180));
+			spider.y -= 3*(Math.sin((spider.rotation+90)*Math.PI/180));
+		}
+		else if( this.forward == true && spider.x >= 640 && (spider.rotation<360 && spider.rotation>180 || spider.rotation>-180
+		&& spider.rotation<0)){
+			spider.x -= 3*(Math.cos((spider.rotation+90)*Math.PI/180));
+			spider.y -= 3*(Math.sin((spider.rotation+90)*Math.PI/180));
+		}
+		else if(this.forward == true && spider.y <= 0&& (spider.rotation<270 && spider.rotation>90 || spider.rotation<-90
+		&& spider.rotation>-270)){
+			spider.x -= 3*(Math.cos((spider.rotation+90)*Math.PI/180));
+			spider.y -= 3*(Math.sin((spider.rotation+90)*Math.PI/180));
+		}
+		else if(this.forward == true && spider.y >= 832&& (spider.rotation>270 && spider.rotation>-90 || spider.rotation<90
+		&& spider.rotation<-270)){
 			spider.x -= 3*(Math.cos((spider.rotation+90)*Math.PI/180));
 			spider.y -= 3*(Math.sin((spider.rotation+90)*Math.PI/180));
 		}
@@ -247,8 +264,10 @@ GameScreen.prototype =
 			spider.rotation -= 3;
 		if(this.turn == "right")
 			spider.rotation += 3;
+		if(spider.rotation>360 || spider. rotation<-360)
+			spider.rotation =0;
 		//V made the rotationValue a actual degree number.
-		//this.rotationValue.text = spider.rotation%360
+		this.rotationValue.text = spider.rotation;
 		if(spider.getBounds().intersects(this.spriteBall.getBounds(),0.2,0.7)){
 			this.hityet = true;
 		}
@@ -262,7 +281,6 @@ GameScreen.prototype =
 			this.addChild(this.gameOver);
 		}
 		if(this.hityet == true){
-			
 			this.score += 1;
 			this.spriteBall.x = (Math.random() * 640);
 			this.spriteBall.y = (Math.random() * 832);
