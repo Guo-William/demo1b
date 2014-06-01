@@ -29,8 +29,6 @@ GameScreen = function(width,height)
 	this.timeLeft = 0;
 	this.timeValue;
 	this.point = 3;
-	
-	
 	//
 	//Set background color
     this.backgroundColor = "#039AFF";
