@@ -5,9 +5,6 @@
     create a SpriteSheetAnimation object. We will also create some buttons that
     will help illustrate the animation controls.
  */
-// hopefully the second to last test
-// THis is a test commit
-// Tada
 MyGame = function()
 {
     //Main game constructor
